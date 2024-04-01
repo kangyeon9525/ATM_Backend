@@ -17,6 +17,6 @@ public class AppUsage {
     private Long id; // AppUsage 엔티티를 위한 ID
     private String appName; // 애플리케이션 이름
     private Long duration; // 사용 시간(밀리초)
-    private LocalDate date; // 사용 날짜
+    private LocalDate date; // 데이터 수집 날짜
     //getter, setter 설정 필요
 }

@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,6 +16,8 @@ import java.util.List;
 // 전체 사용량 화면
 // AppUsage 데이터에 대한 HTTP요청을 처리하는 컨트롤러
 // 전체 사용량, 상위 어플리케이션 사용량 조회하는 API 포함
+@RestController
+@RequestMapping("/appusage") // API의 기본 경로 설정
 public class AppUsageController {
     private final AppUsageService appUsageService;
 

@@ -22,7 +22,6 @@ public class AppUsageService {
     public AppUsageService(AppUsageRepository appUsageRepository) {
         this.appUsageRepository = appUsageRepository;
     }
-
     // 특정 기간 동안의 AppUsage 데이터를 가져오는 메소드
     public List<AppUsage> getAppUsageBetweenDates(LocalDate start, LocalDate end) {
         return appUsageRepository.findByDateBetween(start, end);
