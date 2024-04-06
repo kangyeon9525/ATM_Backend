@@ -5,6 +5,7 @@ import com.example.ATM_Backend.repository.AppUsageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -14,6 +15,7 @@ import java.util.List;
 // 전체 사용량 화면
 // 앱 사용 데이터 관리하는 서비스. 사용량 데이터 조회, 분석하는 로직 담당
 // AppUsage 데이터 처리 로직을 구현 (비즈니스 로직을 처리하는 서비스 레이어)
+@Service
 public class AppUsageService {
     private final AppUsageRepository appUsageRepository;
 
