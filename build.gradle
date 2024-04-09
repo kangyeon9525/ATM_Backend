@@ -19,14 +19,19 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	runtimeOnly 'com.mysql:mysql-connector-java'
+	runtimeOnly 'com.mysql:mysql-connector-java' //MySQL 드라이버 의존성
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'mysql:mysql-connector-java:8.0.36'
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
+	runtimeOnly 'com.h2database:h2' //h2 데이터베이스
 
-	compileOnly 'org.projectlombok:lombok:1.18.22'
-	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+	implementation 'io.jsonwebtoken:jjwt-api:0.9.1' //jwt 토큰을 구현할때 필요한 의존성들
+
+	compileOnly 'org.projectlombok:lombok:1.18.22' //lombok 의존성
+	annotationProcessor 'org.projectlombok:lombok:1.18.22' //lombok 의존성
 
 }
 

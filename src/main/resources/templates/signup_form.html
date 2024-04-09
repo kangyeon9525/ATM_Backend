@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th ="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+</head>
+<body>
+    <h2>회원가입</h2>
+    <form th:action="@{/user/signup}" th:object="${appUserCreateForm}" method="post">
+    <div>
+        <label for="username">사용자 ID:</label>
+        <input type="text" id="username" th:field="*{username}" />
+        <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}">사용자 ID 오류</span>
+    </div>
+    <div>
+        <label for="password1">비밀번호:</label>
+        <input type="password" id="password1" th:field="*{password1}" />
+        <span th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">비밀번호 오류</span>
+    </div>
+    <div>
+        <label for="password2">비밀번호 확인:</label>
+        <input type="password" id="password2" th:field="*{password2}" />
+        <span th:if="${#fields.hasErrors('password2')}" th:errors="*{password2}">비밀번호 확인 오류</span>
+    </div>
+    <div>
+        <label for="email">이메일:</label>
+        <input type="email" id="email" th:field="*{email}" />
+        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}">이메일 오류</span>
+    </div>
+    <div>
+        <label for="name">본명:</label>
+        <input type="text" id="name" th:field="*{name}" />
+        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}">본명 오류</span>
+    </div>
+    <div>
+        <label for="nickname">별명:</label>
+        <input type="text" id="nickname" th:field="*{nickname}" />
+        <span th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}">별명 오류</span>
+    </div>
+    <div>
+        <label for="age">나이:</label>
+        <input type="number" id="age" th:field="*{age}" />
+        <span th:if="${#fields.hasErrors('age')}" th:errors="*{age}">나이 오류</span>
+    </div>
+    <div>
+        <label for="gender">성별:</label>
+        <input type="text" id="gender" th:field="*{gender}" />
+        <span th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}">성별 오류</span>
+    </div>
+    <div>
+        <label for="job">직업:</label>
+        <input type="text" id="job" th:field="*{job}" />
+        <span th:if="${#fields.hasErrors('job')}" th:errors="*{job}">직업 오류</span>
+    </div>
+    <button type="submit">회원가입</button>
+    </form>
+</body>
+</html>
