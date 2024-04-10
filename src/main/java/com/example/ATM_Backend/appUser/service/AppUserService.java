@@ -18,7 +18,7 @@ public class AppUserService {
         AppUser user = new AppUser();
         user.setUsername(username);
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password)); //BCryptPasswordEncoder 클래스를 사용하여 암호화하여 비밀번호를 저장
+        user.setPassword(passwordEncoder.encode(password)); // BCryptPasswordEncoder 클래스를 사용하여 암호화하여 비밀번호를 저장
         user.setName(name);
         user.setNickname(nickname);
         user.setAge(age);

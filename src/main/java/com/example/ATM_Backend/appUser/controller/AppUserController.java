@@ -1,10 +1,11 @@
 package com.example.ATM_Backend.appUser.controller;
 
 
-import com.example.ATM_Backend.appUser.model.AppUserCreateForm;
+import com.example.ATM_Backend.appUser.dto.AppUserCreateForm;
 import com.example.ATM_Backend.appUser.service.AppUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,11 +35,26 @@ public class AppUserController {
             return "signup_form";
         }
 
-        appUserService.create(appUserCreateForm.getUsername(), appUserCreateForm.getEmail(),
-                appUserCreateForm.getPassword1(), appUserCreateForm.getName(),
-                appUserCreateForm.getNickname(), appUserCreateForm.getAge(),
-                appUserCreateForm.getGender(), appUserCreateForm.getJob());
+        try{
+            appUserService.create(appUserCreateForm.getUsername(), appUserCreateForm.getEmail(),
+                    appUserCreateForm.getPassword1(), appUserCreateForm.getName(),
+                    appUserCreateForm.getNickname(), appUserCreateForm.getAge(),
+                    appUserCreateForm.getGender(), appUserCreateForm.getJob());
+        }catch (DataIntegrityViolationException e) { //사용자 ID, 이메일 주소, 닉네임이 이미 존재할 경우
+            e.printStackTrace();
+            bindingResult.reject("signupFailed", "이미 등록된 사용자 입니다.");
+            return "signup_form";
+        }catch (Exception e) { // 그 이외의 오류 발생한 경우
+            e.printStackTrace();
+            bindingResult.reject("signupFailed", e.getMessage());
+            return "signup_form";
+        }
 
         return "redirect:/";
+    }
+
+    @GetMapping("/login") // /user/login URL로 들어오는 GET 요청을 이 메서드가 처리
+    public String login() {
+        return "login_form";
     }
 }
