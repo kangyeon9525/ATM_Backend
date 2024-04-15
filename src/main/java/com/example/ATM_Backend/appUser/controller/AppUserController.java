@@ -3,6 +3,10 @@ package com.example.ATM_Backend.appUser.controller;
 
 import com.example.ATM_Backend.appUser.dto.AppUserCreateForm;
 import com.example.ATM_Backend.appUser.service.AppUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,11 +22,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AppUserController {
     private final AppUserService appUserService;
 
+    @Operation(summary = "회원 가입 페이지 반환", description = "회원 가입을 위한 페이지를 반환합니다.")
     @GetMapping("/signup")
     public String signup(AppUserCreateForm appUserCreateForm) {
         return "signup_form";
     }
 
+    @Operation(summary = "회원 가입 처리", description = "새로운 사용자의 회원 가입을 처리합니다.")
+    @ApiResponse(responseCode = "200", description = "회원 가입 성공",
+            content = @Content(schema = @Schema(implementation = AppUserCreateForm.class)))
+    @ApiResponse(responseCode = "400", description = "입력 데이터 오류")
     @PostMapping("/signup")
     public String signup(@Valid AppUserCreateForm appUserCreateForm, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -53,6 +62,7 @@ public class AppUserController {
         return "redirect:/";
     }
 
+    @Operation(summary = "로그인 페이지 반환", description = "로그인을 위한 페이지를 반환합니다.")
     @GetMapping("/login") // /user/login URL로 들어오는 GET 요청을 이 메서드가 처리
     public String login() {
         return "login_form";
