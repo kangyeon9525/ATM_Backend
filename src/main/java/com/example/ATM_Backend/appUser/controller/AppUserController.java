@@ -34,15 +34,57 @@ public class AppUserController {
     @ApiResponse(responseCode = "400", description = "입력 데이터 오류")
     @PostMapping("/signup")
     public String signup(@Valid AppUserCreateForm appUserCreateForm, BindingResult bindingResult) {
+        boolean ErrChk = false;
         if (bindingResult.hasErrors()) {
-            return "signup_form";
+            ErrChk = true;
         }
 
-        if (!appUserCreateForm.getPassword1().equals(appUserCreateForm.getPassword2())) {
-            bindingResult.rejectValue("password2", "passwordInCorrect",
-                    "2개의 패스워드가 일치하지 않습니다.");
-            return "signup_form";
+        if (appUserCreateForm.getUsername().trim().isEmpty()) {
+            bindingResult.rejectValue("username", "signupFailed", "ID가 입력되지 않았습니다.");
+            ErrChk = true;
         }
+
+        if (appUserCreateForm.getEmail().trim().isEmpty()) {
+            bindingResult.rejectValue("email", "signupFailed", "이메일이 입력되지 않았습니다.");
+            ErrChk = true;
+        }
+
+        if (appUserCreateForm.getName().trim().isEmpty()) {
+            bindingResult.rejectValue("name", "signupFailed", "이름이 입력되지 않았습니다.");
+            ErrChk = true;
+        }
+
+        if (appUserCreateForm.getNickname().trim().isEmpty()) {
+            bindingResult.rejectValue("nickname", "signupFailed", "닉네임이 입력되지 않았습니다.");
+            ErrChk = true;
+        }
+
+        if (appUserCreateForm.getAge() == null || appUserCreateForm.getAge() < 0) {
+            bindingResult.rejectValue("age", "signupFailed", "나이가 입력되지 않았습니다.");
+            ErrChk = true;
+        }
+        if (appUserCreateForm.getGender().trim().isEmpty()) {
+            bindingResult.rejectValue("gender", "signupFailed", "성별이 입력되지 않았습니다.");
+            ErrChk = true;
+        }
+        if (appUserCreateForm.getJob().trim().isEmpty()) {
+            bindingResult.rejectValue("job", "signupFailed", "직업이 입력되지 않았습니다.");
+            ErrChk = true;
+        }
+
+        //비밀번호 일치 검사
+        if (!appUserCreateForm.getPassword1().trim().isEmpty()) {
+            if (!appUserCreateForm.getPassword1().equals(appUserCreateForm.getPassword2())) {
+                bindingResult.rejectValue("password2", "passwordInCorrect",
+                        "2개의 패스워드가 일치하지 않습니다.");
+                ErrChk = true;
+            }
+        } else {
+            bindingResult.rejectValue("password1", "signupFailed", "비밀번호가 입력되지 않았습니다.");
+            ErrChk = true;
+        }
+
+        if (ErrChk) return "signup_form";
 
         try{
             appUserService.create(appUserCreateForm.getUsername(), appUserCreateForm.getEmail(),
