@@ -23,7 +23,7 @@ public class AppUserSecurityService implements UserDetailsService { // UserDetai
 
     @Override // loadUserByUsername 메서드는 사용자명(username)으로 스프링 시큐리티의 사용자(User) 객체를 조회하여 리턴하는 메서드
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AppUser> _appUser = this.appUserRepository.findByusername(username);
+        Optional<AppUser> _appUser = this.appUserRepository.findByUsername(username);
         if (_appUser.isEmpty()) {
             throw new UsernameNotFoundException("사용자를 찾을수 없습니다.");
         }
