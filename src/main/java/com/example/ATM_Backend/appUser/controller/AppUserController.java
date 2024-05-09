@@ -5,6 +5,8 @@ import com.example.ATM_Backend.appUser.model.Role;
 import com.example.ATM_Backend.appUser.repository.AppUserRepository;
 import com.example.ATM_Backend.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,26 @@ public class AppUserController {
     @Operation(summary = "회원 가입")
     @ApiResponse(responseCode = "200", description = "성공적으로 회원가입 완료")
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Map<String, String> user) {
+    public ResponseEntity<String> register(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "회원가입 정보",
+            required = true,
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                            name = "registerExample",
+                            value = "{\n" +
+                                    "  \"username\": \"username\",\n" +
+                                    "  \"email\": \"example@gmail.com\",\n" +
+                                    "  \"password\": \"1234\",\n" +
+                                    "  \"name\": \"홍길동\",\n" +
+                                    "  \"nickname\": \"길동\",\n" +
+                                    "  \"age\": \"20\",\n" +
+                                    "  \"gender\": \"남자\",\n" +
+                                    "  \"job\": \"학생\"\n" +
+                                    "}"
+                    )
+            )
+    )@RequestBody Map<String, String> user) {
         // 입력 값이 공백인지 검사
         if (!StringUtils.hasText(user.get("username")) ||
                 !StringUtils.hasText(user.get("email")) ||
@@ -73,7 +94,20 @@ public class AppUserController {
     @ApiResponse(responseCode = "200", description = "로그인 성공")
     @ApiResponse(responseCode = "401", description = "인증 실패")
     @PostMapping("/login")
-    public String login(@RequestBody Map<String, String> user) {
+    public String login(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "로그인 정보",
+            required = true,
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                            name = "loginExample",
+                            value = "{\n" +
+                                    "  \"username\": \"username\",\n" +
+                                    "  \"password\": \"1234\"\n" +
+                                    "}"
+                    )
+            )
+    )@RequestBody Map<String, String> user) {
         AppUser appUser = appUserRepository.findByUsername(user.get("username"))
                 .orElseThrow(() -> new IllegalArgumentException("가입 되지 않은 ID입니다."));
         if (!passwordEncoder.matches(user.get("password"), appUser.getPassword())) {
