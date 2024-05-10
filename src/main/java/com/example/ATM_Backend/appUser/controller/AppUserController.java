@@ -5,8 +5,10 @@ import com.example.ATM_Backend.appUser.model.Role;
 import com.example.ATM_Backend.appUser.repository.AppUserRepository;
 import com.example.ATM_Backend.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -119,10 +121,17 @@ public class AppUserController {
     //회원탈퇴
     @Operation(summary = "회원 탈퇴")
     @ApiResponse(responseCode = "200", description = "성공적으로 회원 탈퇴 완료")
+    @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없습니다.")
+    @ApiResponse(responseCode = "401", description = "인증이 필요합니다.")
     @DeleteMapping("/users/{username}/delete")
-    public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token) {
-        String username = jwtTokenProvider.getUserPK(token.substring(7)); // "Bearer "를 제거한 토큰에서 사용자명 추출
-        return appUserRepository.findByUsername(username)
+    public ResponseEntity<String> deleteUser(
+            @Parameter(description = "Authorization Token", required = true,
+                    examples = @ExampleObject(name = "Authorization 예시", value = "사용자 jwt 토큰"),
+                    schema = @Schema(type = "string"))
+            @RequestHeader("Authorization") String token,
+            @PathVariable String username) {
+        String userPK = jwtTokenProvider.getUserPK(token.substring(7)); // "Bearer "를 제거한 토큰에서 사용자명 추출
+        return appUserRepository.findByUsername(userPK)
                 .map(user -> {
                     appUserRepository.delete(user);
                     return ResponseEntity.ok("계정이 삭제되었습니다.");
