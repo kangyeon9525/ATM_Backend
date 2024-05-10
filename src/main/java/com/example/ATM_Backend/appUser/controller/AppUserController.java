@@ -49,7 +49,8 @@ public class AppUserController {
                                     "  \"age\": \"20\",\n" +
                                     "  \"gender\": \"남자\",\n" +
                                     "  \"job\": \"학생\"\n" +
-                                    "}"
+                                    "}",
+                            description = "username: 사용자의 아이디, email: 이메일 주소, password: 비밀번호, name: 실명, nickname: 별명, age: 나이, gender: 성별, job: 직업"
                     )
             )
     )@RequestBody Map<String, String> user) {
@@ -106,7 +107,8 @@ public class AppUserController {
                             value = "{\n" +
                                     "  \"username\": \"username\",\n" +
                                     "  \"password\": \"1234\"\n" +
-                                    "}"
+                                    "}",
+                            description = "username: 사용자의 아이디, password: 비밀번호"
                     )
             )
     )@RequestBody Map<String, String> user) {
