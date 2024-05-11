@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class AppUserController {
     @Operation(summary = "회원 가입")
     @ApiResponse(responseCode = "200", description = "성공적으로 회원가입 완료")
     @PostMapping("/register")
-    public ResponseEntity<String> register(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+    public ResponseEntity<Map<String, Object>> register(@io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "회원가입 정보",
             required = true,
             content = @Content(
@@ -63,19 +64,19 @@ public class AppUserController {
                 !StringUtils.hasText(user.get("age")) ||
                 !StringUtils.hasText(user.get("gender")) ||
                 !StringUtils.hasText(user.get("job"))) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("All fields must be filled.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "All fields must be filled."));
         }
         // 이메일 형식 검사
         if (!user.get("email").matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email format.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid email format."));
         }
 
         if (appUserRepository.findByUsername(user.get("username")).isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Username already exists."));
         } else if (appUserRepository.findByEmail(user.get("email")).isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Email already exists."));
         } else if (appUserRepository.findByNickname(user.get("nickname")).isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nickname already exists.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Nickname already exists."));
         }
         AppUser newUser = AppUser.builder()
                 .username(user.get("username"))
@@ -89,7 +90,7 @@ public class AppUserController {
                 .role(Role.ROLE_MEMBER)  // 최초 가입시 USER로 설정
                 .build();
         appUserRepository.save(newUser);
-        return ResponseEntity.ok(String.valueOf(newUser.getId()));
+        return ResponseEntity.ok(Map.of("id", newUser.getId(), "message", "Registration successful."));
     }
 
     //로그인
@@ -97,7 +98,7 @@ public class AppUserController {
     @ApiResponse(responseCode = "200", description = "로그인 성공")
     @ApiResponse(responseCode = "401", description = "인증 실패")
     @PostMapping("/login")
-    public String login(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+    public ResponseEntity<Map<String, Object>> login(@io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "로그인 정보",
             required = true,
             content = @Content(
@@ -111,13 +112,16 @@ public class AppUserController {
                             description = "username: 사용자의 아이디, password: 비밀번호"
                     )
             )
-    )@RequestBody Map<String, String> user) {
+    ) @RequestBody Map<String, String> user) {
         AppUser appUser = appUserRepository.findByUsername(user.get("username"))
-                .orElseThrow(() -> new IllegalArgumentException("가입 되지 않은 ID입니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "가입되지 않은 ID입니다."));
         if (!passwordEncoder.matches(user.get("password"), appUser.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "ID 또는 비밀번호가 맞지 않습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "ID 또는 비밀번호가 맞지 않습니다."));
         }
-        return jwtTokenProvider.createToken(appUser.getUsername(), appUser.getRole());
+        String token = jwtTokenProvider.createToken(appUser.getUsername(), appUser.getRole());
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        return ResponseEntity.ok(response);
     }
 
     //회원탈퇴
@@ -126,19 +130,19 @@ public class AppUserController {
     @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없습니다.")
     @ApiResponse(responseCode = "401", description = "인증이 필요합니다.")
     @DeleteMapping("/users/{username}/delete")
-    public ResponseEntity<String> deleteUser(
+    public ResponseEntity<Map<String, String>> deleteUser(
             @Parameter(description = "Authorization Token", required = true,
                     examples = @ExampleObject(name = "Authorization 예시", value = "사용자 jwt 토큰"),
                     schema = @Schema(type = "string"))
-            @RequestHeader("Authorization") String token,
-            @PathVariable String username) {
+            @RequestHeader(value = "Authorization") String token,
+            @PathVariable ("username") String username) {
         String userPK = jwtTokenProvider.getUserPK(token.substring(7)); // "Bearer "를 제거한 토큰에서 사용자명 추출
         return appUserRepository.findByUsername(userPK)
                 .map(user -> {
                     appUserRepository.delete(user);
-                    return ResponseEntity.ok("계정이 삭제되었습니다.");
+                    return ResponseEntity.ok(Map.of("message", "Account deleted successfully."));
                 })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다."));
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found.")));
     }
 
     @Operation(summary = "로그아웃")
