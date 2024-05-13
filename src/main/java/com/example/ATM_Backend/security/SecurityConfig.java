@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
                         .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
                 .csrf((csrf) -> csrf // /h2-console/로 시작하는 모든 URL은 CSRF 검증을 하지 않는다
-                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
+                        .ignoringRequestMatchers(new AntPathRequestMatcher("/**")))
                 .headers((headers) -> headers //URL 요청 시 X-Frame-Options 헤더를 DENY 대신 SAMEORIGIN으로 설정하여 오류가 발생하지 않도록
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
