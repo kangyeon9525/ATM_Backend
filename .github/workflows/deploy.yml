@@ -2,7 +2,7 @@ name: Build and Deploy for ATM Backend to AWS EC2
 
 on:
   push:
-    branches: [ deploy ]
+    branches: [ master ]
 
 env:
   # 버킷에 저장할 폴더 이름
