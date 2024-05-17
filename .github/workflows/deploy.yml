@@ -37,6 +37,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
+      - name: Check build output
+        run: ls -la build/libs
+
       - name: Upload JAR to S3
         run: |
           JAR_NAME=$(ls build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
@@ -45,7 +48,7 @@ jobs:
             exit 1
           fi
           echo "Uploading $JAR_NAME to S3"
-          aws s3 cp build/libs/$JAR_NAME s3://$BUCKET_NAME/$PROJECT_NAME/$JAR_NAME
+          aws s3 cp build/libs/$JAR_NAME s3://$BUCKET_NAME/$PROJECT_NAME/$JAR_NAME --region ap-northeast-2
 
       - name: Code Deploy To EC2 instance
         run: |
