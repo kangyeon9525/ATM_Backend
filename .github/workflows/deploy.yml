@@ -40,15 +40,12 @@ jobs:
       - name: Check build output
         run: ls -la build/libs
 
-      - name: Upload JAR to S3
+      - name: Make ZIP File
+        run: zip -qq -r $GITHUB_SHA.zip .
+
+      - name: Upload ZIP to S3
         run: |
-          JAR_NAME=$(ls build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
-          if [ -z "$JAR_NAME" ]; then
-            echo "JAR 파일을 찾을 수 없습니다."
-            exit 1
-          fi
-          echo "Uploading $JAR_NAME to S3"
-          aws s3 cp build/libs/$JAR_NAME s3://$BUCKET_NAME/$PROJECT_NAME/$JAR_NAME --region ap-northeast-2
+          aws s3 cp $GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip --region ap-northeast-2
 
       - name: Code Deploy To EC2 instance
         run: |
