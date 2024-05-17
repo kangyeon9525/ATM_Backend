@@ -31,14 +31,22 @@ jobs:
         run: ./gradlew clean build -x test
 
       - name: Upload JAR to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           JAR_NAME=$(ls build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
-          aws s3 cp build/libs/$JAR_NAME s3://$BUCKET_NAME/$PROJECT_NAME/
+          echo "Uploading $JAR_NAME to S3"
+          aws s3 cp build/libs/$JAR_NAME s3://$BUCKET_NAME/$PROJECT_NAME/$JAR_NAME
 
       - name: Code Deploy To EC2 instance
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           aws deploy create-deployment \
             --application-name $CODE_DEPLOY_APP_NAME \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --deployment-group-name $DEPLOYMENT_GROUP_NAME \
             --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
+
