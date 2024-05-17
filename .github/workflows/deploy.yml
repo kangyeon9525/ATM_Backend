@@ -2,7 +2,9 @@ name: Build and Deploy for ATM Backend to AWS EC2
 
 on:
   push:
-    branches: [ deploy ]
+    branches: [ master ]
+  pull_request:
+    branches: [ master]
 
 env:
   # 버킷에 저장할 폴더 이름
@@ -31,6 +33,7 @@ jobs:
     
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+      shell: bash
     
     # Gradle build (Test 제외)
     - name: Build with Gradle
