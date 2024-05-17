@@ -1,0 +1,54 @@
+name: Build and Deploy for ATM Backend to AWS EC2
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  # 버킷에 저장할 폴더 이름
+  PROJECT_NAME: ATM_Backend
+  # S3 버킷 이름
+  BUCKET_NAME: atm-backend-github-action-s3-bucket
+  # CodeDeploy의 애플리케이션 이름
+  CODE_DEPLOY_APP_NAME: atm-backend
+  # CodeDeploy의 배포그룹 이름
+  DEPLOYMENT_GROUP_NAME: atm-backend-group
+  
+
+jobs:
+  build:
+    # 실행 환경 설정
+    runs-on: ubuntu-latest
+
+    # 차례대로 실행
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v1
+      with:
+        java-version: 17
+    
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    # Gradle build (Test 제외)
+    - name: Build with Gradle
+      run: ./gradlew clean build -x test
+      
+    # 압축 파일 만들기
+    - name: Make Zip File
+      run: zip -qq -r ./$GITHUB_SHA.zip .
+      shell: bash
+      
+    # AWS 인증
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-2
+      
+    # S3 버킷으로 파일을 업로드
+    - name: Upload to S3
+      run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
