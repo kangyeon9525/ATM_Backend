@@ -3,11 +3,11 @@ os: linux
 
 files:
   - source: /
-    destination: /home/ubuntu/moduform
+    destination: /home/ubuntu/atm
     overwrite: yes
 
 permissions:
-  - object: /home/ubuntu/moduform/
+  - object: /home/ubuntu/atm/
     owner: ubuntu
     group: ubuntu
 

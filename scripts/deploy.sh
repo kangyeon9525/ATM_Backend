@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-REPOSITORY=/home/ubuntu/moduform
+REPOSITORY=/home/ubuntu/atm
 cd $REPOSITORY
 
-APP_NAME=moduform
+APP_NAME=dopamineKiller
 JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
 
