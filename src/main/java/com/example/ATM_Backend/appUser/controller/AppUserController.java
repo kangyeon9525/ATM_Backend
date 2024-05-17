@@ -144,7 +144,7 @@ public class AppUserController {
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found.")));
     }
-
+/*
     @Operation(summary = "로그아웃")
     @ApiResponse(responseCode = "200", description = "성공적으로 로그아웃 완료")
     @GetMapping("/logout")
@@ -152,13 +152,7 @@ public class AppUserController {
         // 클라이언트 측에서 토큰을 삭제해야 합니다.
         return ResponseEntity.ok("로그아웃되었습니다. 클라이언트에서 사용 중인 토큰을 삭제해주세요.");
     }
+ */
 
-    @Operation(summary = "로그아웃1")
-    @ApiResponse(responseCode = "200", description = "성공적으로 로그아웃 완료")
-    @GetMapping("/logout1")
-    public ResponseEntity<String> logout1() {
-        // 클라이언트 측에서 토큰을 삭제해야 합니다.
-        return ResponseEntity.ok("로그아웃되었습니다. 클라이언트에서 사용 중인 토큰을 삭제해주세요.");
-    }
 
 }
