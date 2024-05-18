@@ -34,4 +34,7 @@ public class AppUser {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private Integer continuous = 0;  // 기본값을 0으로 설정
 }
