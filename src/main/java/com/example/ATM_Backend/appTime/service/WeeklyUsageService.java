@@ -1,15 +1,10 @@
 package com.example.ATM_Backend.appTime.service;
 
-import com.example.ATM_Backend.appTime.model.AppTime;
 import com.example.ATM_Backend.appTime.model.WeeklyUsage;
-import com.example.ATM_Backend.appTime.repository.AppTimeRepository;
 import com.example.ATM_Backend.appTime.repository.WeeklyUsageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.DayOfWeek;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Service
@@ -36,6 +31,23 @@ public class WeeklyUsageService {
     private void updateWeeklyUsage(WeeklyUsage existingEntry, WeeklyUsage newEntry) { //시간대별 데이터 업데이트
         existingEntry.setWeeklyUsage(newEntry.getWeeklyUsage());
         weeklyUsageRepository.save(existingEntry);
+    }
+
+    public List<WeeklyUsage> getWeeklyUsageByUserName(String userName) { //get
+        List<WeeklyUsage> weeklyUsage = weeklyUsageRepository.findByUserName(userName);
+        if (weeklyUsage == null || weeklyUsage.isEmpty()) {
+            throw new IllegalArgumentException("No WeeklyUsage entries found for userName: " + userName);
+        }
+        return weeklyUsage;
+    }
+
+    public boolean deleteWeeklyUsageByUserName(String userName) { //delete
+        List<WeeklyUsage> weeklyUsage = weeklyUsageRepository.findByUserName(userName);
+        if (!weeklyUsage.isEmpty()) {
+            weeklyUsageRepository.deleteAll(weeklyUsage);
+            return true;
+        }
+        return false;
     }
 
 }
