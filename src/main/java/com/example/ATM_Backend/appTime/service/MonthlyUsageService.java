@@ -33,4 +33,21 @@ public class MonthlyUsageService {
         monthlyUsageRepository.save(existingEntry);
     }
 
+    public List<MonthlyUsage> getMonthlyUsageByUserName(String userName) { //get
+        List<MonthlyUsage> monthlyUsage = monthlyUsageRepository.findByUserName(userName);
+        if (monthlyUsage == null || monthlyUsage.isEmpty()) {
+            throw new IllegalArgumentException("No MonthlyUsage entries found for userName: " + userName);
+        }
+        return monthlyUsage;
+    }
+
+    public boolean deleteMonthlyUsageByUserName(String userName) { //delete
+        List<MonthlyUsage> monthlyUsage = monthlyUsageRepository.findByUserName(userName);
+        if (!monthlyUsage.isEmpty()) {
+            monthlyUsageRepository.deleteAll(monthlyUsage);
+            return true;
+        }
+        return false;
+    }
+
 }

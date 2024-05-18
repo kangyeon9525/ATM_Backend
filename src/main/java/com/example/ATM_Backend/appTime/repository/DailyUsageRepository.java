@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface DailyUsageRepository extends JpaRepository<DailyUsage, Long> {
     List<DailyUsage> findByUserNameAndDateAndAppName(String UserName, String date, String appName);
+    List<DailyUsage> findByUserName(String userName);
 }

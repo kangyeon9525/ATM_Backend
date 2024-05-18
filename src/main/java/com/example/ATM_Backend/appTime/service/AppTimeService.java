@@ -17,11 +17,9 @@ public class AppTimeService {
         List<AppTime> existingEntries = appTimeRepository.findByUserNameAndDateAndAppName(
                 appTime.getUserName(), appTime.getDate(), appTime.getAppName());
 
-        if (existingEntries.isEmpty()) { //기존행 없을때
-
+        if (existingEntries.isEmpty()) { //기존행 없을때 post
             appTimeRepository.save(appTime);
-
-        } else { //기존 행 있을때
+        } else { //기존 행 있을때 put
             AppTime existingEntry = existingEntries.get(0);
             updateAppTime(existingEntry, appTime);
         }
@@ -60,11 +58,20 @@ public class AppTimeService {
         appTimeRepository.save(existingEntry);
     }
 
-    public List<AppTime> getAppTimeByUserName(String userName) {
+    public List<AppTime> getAppTimeByUserName(String userName) { //get
         List<AppTime> appTimes = appTimeRepository.findByUserName(userName);
         if (appTimes == null || appTimes.isEmpty()) {
             throw new IllegalArgumentException("No AppTime entries found for userName: " + userName);
         }
         return appTimes;
+    }
+
+    public boolean deleteAppTimeByUserName(String userName) { //delete
+        List<AppTime> appTimes = appTimeRepository.findByUserName(userName);
+        if (!appTimes.isEmpty()) {
+            appTimeRepository.deleteAll(appTimes);
+            return true;
+        }
+        return false;
     }
 }
