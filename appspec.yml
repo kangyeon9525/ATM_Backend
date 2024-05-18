@@ -1,0 +1,22 @@
+version: 0.0 # version은 반드시 0.0이어야 함
+os: linux
+
+files:
+  - source: /
+    destination: /home/ubuntu/atm
+    overwrite: yes
+
+permissions:
+  - object: /home/ubuntu/atm/
+    owner: ubuntu
+    group: ubuntu
+
+hooks:
+  AfterInstall:
+    - location: scripts/deploy.sh
+      timeout: 60
+      runas: ubuntu
+  ApplicationStart:
+    - location: scripts/deploy.sh
+      timeout: 60
+      runas: ubuntu

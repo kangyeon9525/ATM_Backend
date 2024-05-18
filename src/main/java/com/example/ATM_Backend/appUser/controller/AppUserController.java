@@ -64,19 +64,19 @@ public class AppUserController {
                 !StringUtils.hasText(user.get("age")) ||
                 !StringUtils.hasText(user.get("gender")) ||
                 !StringUtils.hasText(user.get("job"))) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "All fields must be filled."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "모든 입력창은 입력이 되어야합니다"));
         }
         // 이메일 형식 검사
         if (!user.get("email").matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid email format."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "잘못된 이메일 형식입니다"));
         }
 
         if (appUserRepository.findByUsername(user.get("username")).isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Username already exists."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "해당 ID는 이미 존재합니다"));
         } else if (appUserRepository.findByEmail(user.get("email")).isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Email already exists."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "해당 이메일은 이미 존재합니다"));
         } else if (appUserRepository.findByNickname(user.get("nickname")).isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Nickname already exists."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "해당 별명은 이미 존재합니다"));
         }
         AppUser newUser = AppUser.builder()
                 .username(user.get("username"))
@@ -90,7 +90,7 @@ public class AppUserController {
                 .role(Role.ROLE_MEMBER)  // 최초 가입시 USER로 설정
                 .build();
         appUserRepository.save(newUser);
-        return ResponseEntity.ok(Map.of("id", newUser.getId(), "message", "Registration successful."));
+        return ResponseEntity.ok(Map.of("id", newUser.getId(), "message", "회원가입을 성공했습니다"));
     }
 
     //로그인
@@ -114,9 +114,9 @@ public class AppUserController {
             )
     ) @RequestBody Map<String, String> user) {
         AppUser appUser = appUserRepository.findByUsername(user.get("username"))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "가입되지 않은 ID입니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "가입되지 않은 ID입니다"));
         if (!passwordEncoder.matches(user.get("password"), appUser.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "ID 또는 비밀번호가 맞지 않습니다."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "ID 또는 비밀번호가 맞지 않습니다"));
         }
         String token = jwtTokenProvider.createToken(appUser.getUsername(), appUser.getRole());
         Map<String, Object> response = new HashMap<>();
@@ -140,9 +140,9 @@ public class AppUserController {
         return appUserRepository.findByUsername(userPK)
                 .map(user -> {
                     appUserRepository.delete(user);
-                    return ResponseEntity.ok(Map.of("message", "Account deleted successfully."));
+                    return ResponseEntity.ok(Map.of("message", "성공적으로 회원탈퇴 되었습니다"));
                 })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found.")));
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "해당 사용자가 보이지 않습니다.")));
     }
 
     @Operation(summary = "로그아웃")
@@ -152,5 +152,6 @@ public class AppUserController {
         // 클라이언트 측에서 토큰을 삭제해야 합니다.
         return ResponseEntity.ok("로그아웃되었습니다. 클라이언트에서 사용 중인 토큰을 삭제해주세요.");
     }
+
 
 }
