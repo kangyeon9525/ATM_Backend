@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,6 +89,8 @@ public class AppUserController {
                 .gender(user.get("gender"))
                 .job(user.get("job"))
                 .role(Role.ROLE_MEMBER)  // 최초 가입시 USER로 설정
+                .continuous(0)
+                .loginDate(LocalDate.now())
                 .build();
         appUserRepository.save(newUser);
         return ResponseEntity.ok(Map.of("id", newUser.getId(), "message", "회원가입을 성공했습니다"));
@@ -118,6 +121,18 @@ public class AppUserController {
         if (!passwordEncoder.matches(user.get("password"), appUser.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "ID 또는 비밀번호가 맞지 않습니다"));
         }
+
+        // 현재 날짜와 loginDate를 비교
+        LocalDate currentDate = LocalDate.now();
+        LocalDate previousDate = currentDate.minusDays(1);
+        if (appUser.getLoginDate().isEqual(previousDate)) {
+            appUser.incrementContinuous();
+        } else {
+            appUser.resetContinuous();
+        }
+        appUser.updateLoginDate(currentDate);
+        appUserRepository.save(appUser);
+
         String token = jwtTokenProvider.createToken(appUser.getUsername(), appUser.getRole());
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);

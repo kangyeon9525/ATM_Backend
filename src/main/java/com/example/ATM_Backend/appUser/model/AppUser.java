@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Entity
@@ -34,4 +36,22 @@ public class AppUser {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private Integer continuous = 0;  // 기본값을 0으로 설정
+
+    @Column(nullable = false)
+    private LocalDate loginDate = LocalDate.now(); // 날짜만 저장
+
+    public void updateLoginDate(LocalDate newDate) {
+        this.loginDate = newDate;
+    }
+
+    public void incrementContinuous() {
+        this.continuous += 1;
+    }
+
+    public void resetContinuous() {
+        this.continuous = 1;
+    }
 }
