@@ -19,5 +19,5 @@ public class Badge {
     private int criteria;
     private String description;
     private String name;
-    private String imageUrl;
+    private String image_url;
 }

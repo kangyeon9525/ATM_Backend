@@ -10,13 +10,13 @@ public class BadgeDTO {
     private String name;
     private String description;
     private int criteria;
-    private String imageUrl;
+    private String image_url;
 
-    public BadgeDTO(Long id, String name, String description, int criteria, String imageUrl) {
+    public BadgeDTO(Long id, String name, String description, int criteria, String image_url) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.criteria = criteria;
-        this.imageUrl = imageUrl;  // 필드 초기화
+        this.image_url = image_url;
     }
 }

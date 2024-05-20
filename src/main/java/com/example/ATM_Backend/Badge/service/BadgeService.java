@@ -50,7 +50,7 @@ public class BadgeService {
                 userBadge.getBadge().getName(),
                 userBadge.getBadge().getDescription(),
                 userBadge.getBadge().getCriteria(),
-                userBadge.getBadge().getImageUrl()
+                userBadge.getBadge().getImage_url()
         );
         return new UserBadgeDTO(userBadge.getId(), badgeDTO, userBadge.isAchieved());
     }
