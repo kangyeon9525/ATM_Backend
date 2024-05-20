@@ -51,7 +51,7 @@ public class BadgeServiceTest {
         badge.setCriteria(3);
         badge.setDescription("벌써 3일 째 출석했어요! 뇌가 맑아지는 것 같은 느낌이 들지 않나요?");
         badge.setName("🛳 순항 중");
-        badge.setImageUrl("https://atm-badge-logos.s3.ap-northeast-2.amazonaws.com/badge_logo/smooth_sailing.png");
+        badge.setImage_url("https://atm-badge-logos.s3.ap-northeast-2.amazonaws.com/badge_logo/smooth_sailing.png");
         Mockito.when(badgeRepository.findAll()).thenReturn(List.of(badge));
         Mockito.when(badgeRepository.findById(4L)).thenReturn(Optional.of(badge));
     }
