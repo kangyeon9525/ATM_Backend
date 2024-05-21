@@ -14,4 +14,6 @@ public interface UserBadgeRepository extends JpaRepository<UserBadge, Long> {
 
     // user와 badge를 기준으로 UserBadge 존재 여부를 확인하는 메서드 추가
     boolean existsByUserAndBadge(AppUser user, Badge badge);
+
+    void deleteByUser(AppUser user);
 }

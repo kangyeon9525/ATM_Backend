@@ -1,5 +1,6 @@
 package com.example.ATM_Backend.appUser.controller;
 
+import com.example.ATM_Backend.Badge.repository.UserBadgeRepository;
 import com.example.ATM_Backend.appUser.model.AppUser;
 import com.example.ATM_Backend.appUser.model.Role;
 import com.example.ATM_Backend.appUser.repository.AppUserRepository;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ public class AppUserController {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AppUserRepository appUserRepository;
+    private final UserBadgeRepository userBadgeRepository;
 
     //회원가입
     @Operation(summary = "회원 가입")
@@ -145,6 +148,7 @@ public class AppUserController {
     @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없습니다.")
     @ApiResponse(responseCode = "401", description = "인증이 필요합니다.")
     @DeleteMapping("/users/{username}/delete")
+    @Transactional
     public ResponseEntity<Map<String, String>> deleteUser(
             @Parameter(description = "Authorization Token", required = true,
                     examples = @ExampleObject(name = "Authorization 예시", value = "사용자 jwt 토큰"),
@@ -154,7 +158,8 @@ public class AppUserController {
         String userPK = jwtTokenProvider.getUserPK(token.substring(7)); // "Bearer "를 제거한 토큰에서 사용자명 추출
         return appUserRepository.findByUsername(userPK)
                 .map(user -> {
-                    appUserRepository.delete(user);
+                    userBadgeRepository.deleteByUser(user); // user_badge 테이블에서 해당 사용자의 데이터 삭제
+                    appUserRepository.delete(user); // app_user 테이블에서 해당 사용자 삭제
                     return ResponseEntity.ok(Map.of("message", "성공적으로 회원탈퇴 되었습니다"));
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "해당 사용자가 보이지 않습니다.")));
