@@ -1,5 +1,6 @@
 package com.example.ATM_Backend.ai.controller;
 
+import com.example.ATM_Backend.ai.dto.FlaskResponse;
 import com.example.ATM_Backend.jwt.JwtTokenProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +22,7 @@ public class FlaskController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/flask-api")
-    public ResponseEntity<String> getFlaskResponse(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<FlaskResponse> getFlaskResponse(@RequestHeader("Authorization") String token) {
         try {
             // JWT 토큰에서 사용자 이름 추출
             String userPK = jwtTokenProvider.getUserPK(token.substring(7)); // "Bearer "를 제거한 토큰에서 사용자명 추출
@@ -31,11 +32,13 @@ public class FlaskController {
 
             // Flask 서버에 요청을 보낼 때 현재 사용자의 이름을 포함하여 요청
             String response = restTemplate.getForObject(flaskUrl + "?username=" + userPK, String.class);
+            System.out.println("Received from Flask: " + response);  // 로깅
 
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(response);
+            FlaskResponse flaskResponse = mapper.readValue(response, FlaskResponse.class);
+            //JsonNode root = mapper.readTree(response);
 
-            //String predictTime = root.path("predict_time").asText();
+            /*
             String advice = root.path("advice").asText();
             double totalUsageTime = root.path("total_usage_time").asDouble();
             double aimTime = root.path("aim_time").asDouble();
@@ -68,10 +71,15 @@ public class FlaskController {
                     aimTimeFormatted, predictTimeFormatted, totalUsageTimeFormatted, advice);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
+             */
+            System.out.println("Parsed Response: " + flaskResponse);  // 로깅
+
+            return new ResponseEntity<>(flaskResponse, HttpStatus.OK);
 
         } catch (Exception e) {
             e.printStackTrace();  // 오류가 발생한 경우 스택 트레이스를 출력하여 문제 파악
-            return new ResponseEntity<>("Flask API 응답 처리 중 오류가 발생했습니다: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            //return new ResponseEntity<>("Flask API 응답 처리 중 오류가 발생했습니다: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new FlaskResponse(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
