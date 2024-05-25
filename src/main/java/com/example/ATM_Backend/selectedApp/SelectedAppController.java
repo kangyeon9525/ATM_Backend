@@ -1,7 +1,5 @@
-package com.example.ATM_Backend.appTime.controller;
+package com.example.ATM_Backend.selectedApp;
 
-import com.example.ATM_Backend.appTime.model.AppTime;
-import com.example.ATM_Backend.appTime.service.AppTimeService;
 import com.example.ATM_Backend.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -14,31 +12,31 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/apptime")
-public class AppTimeController {
+@RequestMapping("/selectedapp")
+public class SelectedAppController {
 
-    private final AppTimeService appTimeService;
+    private final SelectedAppService selectedAppService;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public AppTimeController(AppTimeService appTimeService) {
-        this.appTimeService = appTimeService;
+    public SelectedAppController(SelectedAppService selectedAppService) {
+        this.selectedAppService = selectedAppService;
     }
 
 
     @PostMapping("/post")
-    public ResponseEntity<String> saveOrUpdateAppTime(@RequestBody AppTime appTime) {
+    public ResponseEntity<String> saveOrUpdateSelectedApp(@RequestBody SelectedApp selectedApp) {
         try {
-            appTimeService.saveOrUpdateAppTime(appTime);
-            return ResponseEntity.ok("AppTime saved or updated successfully");
+            selectedAppService.saveOrUpdateSelectedApp(selectedApp);
+            return ResponseEntity.ok("SelectedApp saved or updated successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save or update AppTime");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save or update SelectedApp");
         }
     }
 
     @GetMapping("/get/{userName}")
-    public ResponseEntity<List<AppTime>> getAppTimeByUserName(
+    public ResponseEntity<List<SelectedApp>> getSelectedAppByUserName(
             @Parameter(description = "Authorization Token", required = true,
                     examples = @ExampleObject(name = "Authorization 예시", value = "사용자 jwt 토큰"),
                     schema = @Schema(type = "string"))
@@ -61,11 +59,11 @@ public class AppTimeController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
 
-            List<AppTime> appTimes = appTimeService.getAppTimeByUserName(userName);
-            if (appTimes.isEmpty()) {
+            List<SelectedApp> selectedApps = selectedAppService.getSelectedAppByUserName(userName);
+            if (selectedApps.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-            return ResponseEntity.ok(appTimes);
+            return ResponseEntity.ok(selectedApps);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -73,7 +71,7 @@ public class AppTimeController {
 
 
     @DeleteMapping("/delete/{userName}")
-    public ResponseEntity<String> deleteAppTimeByUserName(
+    public ResponseEntity<String> deleteSelectedAppByUserName(
             @Parameter(description = "Authorization Token", required = true,
                     examples = @ExampleObject(name = "Authorization 예시", value = "사용자 jwt 토큰"),
                     schema = @Schema(type = "string"))
@@ -96,14 +94,14 @@ public class AppTimeController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 사용자의 userName과 일치하지 않습니다.");
             }
 
-            boolean isDeleted = appTimeService.deleteAppTimeByUserName(userName);
+            boolean isDeleted = selectedAppService.deleteSelectedAppByUserName(userName);
             if (isDeleted) {
-                return ResponseEntity.ok("AppTime deleted successfully");
+                return ResponseEntity.ok("SelectedApp deleted successfully");
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("AppTime not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("SelectedApp not found");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete AppTime");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete SelectedApp");
         }
     }
 
