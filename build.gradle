@@ -31,6 +31,7 @@ dependencies {
 	implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
 	runtimeOnly 'com.h2database:h2' //h2 데이터베이스
 
+
 	// Swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 

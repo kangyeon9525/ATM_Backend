@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface MonthlyUsageRepository extends JpaRepository<MonthlyUsage, Long> {
     List<MonthlyUsage> findByUserNameAndDateAndAppName(String UserName, String date, String appName);
+    List<MonthlyUsage> findByUserName(String userName);
 }

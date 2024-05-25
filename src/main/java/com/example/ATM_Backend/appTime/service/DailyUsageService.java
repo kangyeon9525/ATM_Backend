@@ -33,4 +33,21 @@ public class DailyUsageService {
         dailyUsageRepository.save(existingEntry);
     }
 
+    public List<DailyUsage> getDailyUsageByUserName(String userName) { //get
+        List<DailyUsage> dailyUsage = dailyUsageRepository.findByUserName(userName);
+        if (dailyUsage == null || dailyUsage.isEmpty()) {
+            throw new IllegalArgumentException("No DailyUsage entries found for userName: " + userName);
+        }
+        return dailyUsage;
+    }
+
+    public boolean deleteDailyUsageByUserName(String userName) { //delete
+        List<DailyUsage> dailyUsage = dailyUsageRepository.findByUserName(userName);
+        if (!dailyUsage.isEmpty()) {
+            dailyUsageRepository.deleteAll(dailyUsage);
+            return true;
+        }
+        return false;
+    }
+
 }

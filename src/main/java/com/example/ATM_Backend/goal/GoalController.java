@@ -1,7 +1,5 @@
-package com.example.ATM_Backend.appTime.controller;
+package com.example.ATM_Backend.goal;
 
-import com.example.ATM_Backend.appTime.model.AppTime;
-import com.example.ATM_Backend.appTime.service.AppTimeService;
 import com.example.ATM_Backend.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -14,31 +12,31 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/apptime")
-public class AppTimeController {
+@RequestMapping("/goal")
+public class GoalController {
 
-    private final AppTimeService appTimeService;
+    private final GoalService goalService;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public AppTimeController(AppTimeService appTimeService) {
-        this.appTimeService = appTimeService;
+    public GoalController(GoalService goalService) {
+        this.goalService = goalService;
     }
 
 
     @PostMapping("/post")
-    public ResponseEntity<String> saveOrUpdateAppTime(@RequestBody AppTime appTime) {
+    public ResponseEntity<String> saveOrUpdateGoal(@RequestBody Goal goal) {
         try {
-            appTimeService.saveOrUpdateAppTime(appTime);
-            return ResponseEntity.ok("AppTime saved or updated successfully");
+            goalService.saveOrUpdateGoal(goal);
+            return ResponseEntity.ok("Goal saved or updated successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save or update AppTime");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save or update Goal");
         }
     }
 
     @GetMapping("/get/{userName}")
-    public ResponseEntity<List<AppTime>> getAppTimeByUserName(
+    public ResponseEntity<List<Goal>> getGoalByUserName(
             @Parameter(description = "Authorization Token", required = true,
                     examples = @ExampleObject(name = "Authorization 예시", value = "사용자 jwt 토큰"),
                     schema = @Schema(type = "string"))
@@ -61,11 +59,11 @@ public class AppTimeController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
 
-            List<AppTime> appTimes = appTimeService.getAppTimeByUserName(userName);
-            if (appTimes.isEmpty()) {
+            List<Goal> goals = goalService.getGoalByUserName(userName);
+            if (goals.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-            return ResponseEntity.ok(appTimes);
+            return ResponseEntity.ok(goals);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -73,7 +71,7 @@ public class AppTimeController {
 
 
     @DeleteMapping("/delete/{userName}")
-    public ResponseEntity<String> deleteAppTimeByUserName(
+    public ResponseEntity<String> deleteGoalByUserName(
             @Parameter(description = "Authorization Token", required = true,
                     examples = @ExampleObject(name = "Authorization 예시", value = "사용자 jwt 토큰"),
                     schema = @Schema(type = "string"))
@@ -96,15 +94,16 @@ public class AppTimeController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 사용자의 userName과 일치하지 않습니다.");
             }
 
-            boolean isDeleted = appTimeService.deleteAppTimeByUserName(userName);
+            boolean isDeleted = goalService.deleteGoalByUserName(userName);
             if (isDeleted) {
-                return ResponseEntity.ok("AppTime deleted successfully");
+                return ResponseEntity.ok("Goal deleted successfully");
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("AppTime not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Goal not found");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete AppTime");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete Goal");
         }
     }
 
 }
+
