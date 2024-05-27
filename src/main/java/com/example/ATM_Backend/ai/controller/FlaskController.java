@@ -36,37 +36,8 @@ public class FlaskController {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(response);
 
-
             String advice = root.path("advice").asText();
-            double totalUsageTime = root.path("total_usage_time").asDouble();
-            double aimTime = root.path("aim_time").asDouble();
-            double predictTime = root.path("predict_time").asDouble();
-
-            // totalUsageTime, aimTime, predictTime을 시간과 분으로 변환
-            int totalHours = (int) totalUsageTime;
-            int totalMinutes = (int) ((totalUsageTime - totalHours) * 60);
-
-            int aimHours = (int) aimTime;
-            int aimMinutes = (int) ((aimTime - aimHours) * 60);
-
-            int predictHours = (int) predictTime;
-            int predictMinutes = (int) ((predictTime - predictHours) * 60);
-
-            // 시간과 분을 포맷팅하여 문자열 생성
-            String totalUsageTimeFormatted = totalHours > 0 ?
-                    String.format("%d시간 %d분", totalHours, totalMinutes) :
-                    String.format("%d분", totalMinutes);
-
-            String aimTimeFormatted = aimHours > 0 ?
-                    String.format("%d시간 %d분", aimHours, aimMinutes) :
-                    String.format("%d분", aimMinutes);
-
-            String predictTimeFormatted = predictHours > 0 ?
-                    String.format("%d시간 %d분", predictHours, predictMinutes) :
-                    String.format("%d분", predictMinutes);
-
-            String result = String.format("오늘 목표한 스마트폰 사용시간은 %s이고, 오늘 예상 사용시간은 %s이며, 오늘 총 %s 사용했어요.\n%s",
-                    aimTimeFormatted, predictTimeFormatted, totalUsageTimeFormatted, advice);
+            String result = String.format("%s", advice);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
 
