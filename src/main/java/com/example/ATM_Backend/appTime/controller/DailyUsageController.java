@@ -6,6 +6,7 @@ import com.example.ATM_Backend.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +28,19 @@ public class DailyUsageController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity<String> saveOrUpdateDailyUsage(@RequestBody DailyUsage dailyUsage) {
+    public ResponseEntity<String> saveOrUpdateDailyUsage(
+            @Valid @RequestBody DailyUsage dailyUsage) {
+        String userName = dailyUsage.getUserName();
+        if (userName == null || userName.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("userName cannot be null or empty");
+        }
+
         try {
             dailyUsageService.saveOrUpdateDailyUsage(dailyUsage);
             return ResponseEntity.ok("DailyUsage updated successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save or update DailyUsage");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to save or update DailyUsage");
         }
     }
 

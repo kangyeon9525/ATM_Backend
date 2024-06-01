@@ -1,11 +1,13 @@
 package com.example.ATM_Backend.appTime.controller;
 
 import com.example.ATM_Backend.appTime.model.AppTime;
+import com.example.ATM_Backend.appTime.model.DailyUsage;
 import com.example.ATM_Backend.appTime.service.AppTimeService;
 import com.example.ATM_Backend.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,13 @@ public class AppTimeController {
 
 
     @PostMapping("/post")
-    public ResponseEntity<String> saveOrUpdateAppTime(@RequestBody AppTime appTime) {
+    public ResponseEntity<String> saveOrUpdateAppTime(
+            @Valid @RequestBody AppTime appTime) {
+            String userName = appTime.getUserName();
+            if (userName == null || userName.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("userName cannot be null or empty");
+            }
+
         try {
             appTimeService.saveOrUpdateAppTime(appTime);
             return ResponseEntity.ok("AppTime saved or updated successfully");
