@@ -52,9 +52,6 @@ public class AppTimeService {
         existingEntry.setHour22(newEntry.getHour22());
         existingEntry.setHour23(newEntry.getHour23());
 
-        //int totalUsage = calculateTotalUsage(existingEntry);
-        //existingEntry.setDailyUsage(totalUsage);
-
         appTimeRepository.save(existingEntry);
     }
 

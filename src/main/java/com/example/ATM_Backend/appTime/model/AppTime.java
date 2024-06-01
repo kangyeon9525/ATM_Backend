@@ -12,7 +12,6 @@ public class AppTime {
     private Long id;
 
     private String userName; // 유저 이름
-    @Getter
     private String appName;//어플 이름
     private String date; //날짜
     private Integer dayOfWeek; // 1:일요일 ~ 7:토요일
