@@ -4,6 +4,7 @@ import com.example.ATM_Backend.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,11 @@ public class SelectedAppController {
 
 
     @PostMapping("/post")
-    public ResponseEntity<String> saveOrUpdateSelectedApp(@RequestBody SelectedApp selectedApp) {
+    public ResponseEntity<String> saveOrUpdateSelectedApp(@Valid @RequestBody SelectedApp selectedApp) {
+        String userName = selectedApp.getUserName();
+        if (userName == null || userName.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("userName cannot be null or empty");
+        }
         try {
             selectedAppService.saveOrUpdateSelectedApp(selectedApp);
             return ResponseEntity.ok("SelectedApp saved or updated successfully");
