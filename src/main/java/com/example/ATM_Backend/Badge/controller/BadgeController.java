@@ -29,8 +29,8 @@ public class BadgeController {
         return ResponseEntity.ok(userBadges);
     }
 
-    @PostMapping("/check-and-award")
-    public ResponseEntity<Void> checkAndAwardBadges() {
+    @PostMapping("/check-and-award-attendance")
+    public ResponseEntity<Void> checkAndAwardBadgesBasedOnAttendance() {
         badgeService.checkAndAwardBadgesBasedOnAttendance();
         return ResponseEntity.ok().build();
     }
