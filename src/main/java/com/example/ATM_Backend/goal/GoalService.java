@@ -1,5 +1,6 @@
 package com.example.ATM_Backend.goal;
 
+import com.example.ATM_Backend.Badge.service.BadgeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GoalService {
     private final GoalRepository goalRepository;
+    private final BadgeService badgeService;
 
     public void saveOrUpdateGoal(Goal goal) {
         List<Goal> existingEntries = goalRepository.findByUserNameAndAppNameAndDate(
@@ -20,6 +22,8 @@ public class GoalService {
             Goal existingEntry = existingEntries.get(0);
             updateGoal(existingEntry, goal);
         }
+        // 목표를 저장하거나 업데이트한 후, 뱃지 확인 로직 실행
+        badgeService.checkAndAwardBadgesBasedOnGoalUsage();
     }
 
     private void updateGoal(Goal existingEntry, Goal newEntry) { //시간대별 데이터 업데이트
@@ -47,4 +51,3 @@ public class GoalService {
         return false;
     }
 }
-

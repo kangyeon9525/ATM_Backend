@@ -16,7 +16,8 @@ public class Badge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int criteria;
+    private int criteria_attendance; // 출석 기준
+    private int criteria_goalusage; // 목표 사용 시간 기준
     private String description;
     private String name;
     private String image_url;
