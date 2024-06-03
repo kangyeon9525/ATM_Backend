@@ -65,8 +65,8 @@ public class BadgeService {
         for (AppUser user : users) {
             List<Badge> badges = badgeRepository.findAll();
             for (Badge badge : badges) {
-                Integer continuous = user.getContinuous() != null ? user.getContinuous() : 0;
-                if (continuous >= badge.getCriteria_attendance()) {
+                Integer criteriaAttendance = badge.getCriteria_attendance();
+                if (criteriaAttendance != null && user.getContinuous() != null && user.getContinuous() >= criteriaAttendance) {
                     if (!userBadgeRepository.existsByUserAndBadge(user, badge)) {
                         UserBadge userBadge = new UserBadge();
                         userBadge.setUser(user);
@@ -79,7 +79,6 @@ public class BadgeService {
             }
         }
     }
-
 
     public void checkAndAwardBadgesBasedOnGoalUsage() {
         List<AppUser> users = appUserRepository.findAll();
@@ -103,5 +102,4 @@ public class BadgeService {
             }
         }
     }
-
 }
