@@ -32,6 +32,7 @@ public class BadgeService {
             userBadge.setUser(user);
             userBadge.setBadge(badge);
             userBadge.setAchieved(true);
+            userBadge.setUserName(user.getUsername()); // user_name 필드 설정
             userBadgeRepository.save(userBadge);
         }
     }
@@ -71,12 +72,14 @@ public class BadgeService {
                         userBadge.setUser(user);
                         userBadge.setBadge(badge);
                         userBadge.setAchieved(true);
+                        userBadge.setUserName(user.getUsername()); // user_name 필드 설정
                         userBadgeRepository.save(userBadge);
                     }
                 }
             }
         }
     }
+
 
     public void checkAndAwardBadgesBasedOnGoalUsage() {
         List<AppUser> users = appUserRepository.findAll();
@@ -91,6 +94,7 @@ public class BadgeService {
                             userBadge.setUser(user);
                             userBadge.setBadge(badge);
                             userBadge.setAchieved(true);
+                            userBadge.setUserName(user.getUsername()); // user_name 필드 설정
                             userBadgeRepository.save(userBadge);
                             System.out.println("Badge awarded: " + badge.getName() + " to user: " + user.getUsername());
                         }
@@ -99,4 +103,5 @@ public class BadgeService {
             }
         }
     }
+
 }

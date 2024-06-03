@@ -22,4 +22,7 @@ public class UserBadge {
     private Badge badge;
 
     private boolean achieved;
+
+    @Column(name = "user_name")
+    private String userName; // 새로운 필드 추가
 }

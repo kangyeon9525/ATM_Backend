@@ -2,6 +2,7 @@ package com.example.ATM_Backend.goal;
 
 import com.example.ATM_Backend.Badge.service.BadgeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,7 +10,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GoalService {
+    @Autowired
     private final GoalRepository goalRepository;
+
+    @Autowired
     private final BadgeService badgeService;
 
     public void saveOrUpdateGoal(Goal goal) {
