@@ -8,6 +8,8 @@ import com.example.ATM_Backend.Badge.model.UserBadge;
 import com.example.ATM_Backend.appUser.repository.AppUserRepository;
 import com.example.ATM_Backend.Badge.repository.BadgeRepository;
 import com.example.ATM_Backend.Badge.repository.UserBadgeRepository;
+import com.example.ATM_Backend.goal.Goal;
+import com.example.ATM_Backend.goal.GoalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ public class BadgeService {
     private final AppUserRepository appUserRepository;
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
+    private final GoalRepository goalRepository;
 
     public void checkAndAwardBadge(String username, Long badgeId) {
         AppUser user = appUserRepository.findByUsername(username).orElse(null);
@@ -29,6 +32,7 @@ public class BadgeService {
             userBadge.setUser(user);
             userBadge.setBadge(badge);
             userBadge.setAchieved(true);
+            userBadge.setUserName(user.getUsername()); // user_name 필드 설정
             userBadgeRepository.save(userBadge);
         }
     }
@@ -49,7 +53,8 @@ public class BadgeService {
                 userBadge.getBadge().getId(),
                 userBadge.getBadge().getName(),
                 userBadge.getBadge().getDescription(),
-                userBadge.getBadge().getCriteria(),
+                userBadge.getBadge().getCriteria_attendance(),
+                userBadge.getBadge().getCriteria_goalusage(),
                 userBadge.getBadge().getImage_url()
         );
         return new UserBadgeDTO(userBadge.getId(), badgeDTO, userBadge.isAchieved());
@@ -61,16 +66,42 @@ public class BadgeService {
             List<Badge> badges = badgeRepository.findAll();
             for (Badge badge : badges) {
                 Integer continuous = user.getContinuous() != null ? user.getContinuous() : 0;
-                if (continuous >= badge.getCriteria()) {
+                if (continuous >= badge.getCriteria_attendance()) {
                     if (!userBadgeRepository.existsByUserAndBadge(user, badge)) {
                         UserBadge userBadge = new UserBadge();
                         userBadge.setUser(user);
                         userBadge.setBadge(badge);
                         userBadge.setAchieved(true);
+                        userBadge.setUserName(user.getUsername()); // user_name 필드 설정
                         userBadgeRepository.save(userBadge);
                     }
                 }
             }
         }
     }
+
+
+    public void checkAndAwardBadgesBasedOnGoalUsage() {
+        List<AppUser> users = appUserRepository.findAll();
+        for (AppUser user : users) {
+            List<Goal> goals = goalRepository.findByUserName(user.getUsername());
+            for (Goal goal : goals) {
+                List<Badge> badges = badgeRepository.findAll();
+                for (Badge badge : badges) {
+                    if (badge.getCriteria_goalusage() != null && goal.getHowLong() >= badge.getCriteria_goalusage()) {
+                        if (!userBadgeRepository.existsByUserAndBadge(user, badge)) {
+                            UserBadge userBadge = new UserBadge();
+                            userBadge.setUser(user);
+                            userBadge.setBadge(badge);
+                            userBadge.setAchieved(true);
+                            userBadge.setUserName(user.getUsername()); // user_name 필드 설정
+                            userBadgeRepository.save(userBadge);
+                            System.out.println("Badge awarded: " + badge.getName() + " to user: " + user.getUsername());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

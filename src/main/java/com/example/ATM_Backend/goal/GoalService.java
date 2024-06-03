@@ -1,6 +1,8 @@
 package com.example.ATM_Backend.goal;
 
+import com.example.ATM_Backend.Badge.service.BadgeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,7 +10,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GoalService {
+    @Autowired
     private final GoalRepository goalRepository;
+
+    @Autowired
+    private final BadgeService badgeService;
 
     public void saveOrUpdateGoal(Goal goal) {
         List<Goal> existingEntries = goalRepository.findByUserNameAndAppNameAndDate(
@@ -20,17 +26,17 @@ public class GoalService {
             Goal existingEntry = existingEntries.get(0);
             updateGoal(existingEntry, goal);
         }
+        badgeService.checkAndAwardBadgesBasedOnGoalUsage();
     }
 
-    private void updateGoal(Goal existingEntry, Goal newEntry) { //시간대별 데이터 업데이트
+    private void updateGoal(Goal existingEntry, Goal newEntry) {
         existingEntry.setGoalTime(newEntry.getGoalTime());
         existingEntry.setHowLong(newEntry.getHowLong());
         existingEntry.setOnGoing(newEntry.getOnGoing());
-
         goalRepository.save(existingEntry);
     }
 
-    public List<Goal> getGoalByUserName(String userName) { //get
+    public List<Goal> getGoalByUserName(String userName) {
         List<Goal> goals = goalRepository.findByUserName(userName);
         if (goals == null || goals.isEmpty()) {
             throw new IllegalArgumentException("No Goal entries found for userName: " + userName);
@@ -38,7 +44,7 @@ public class GoalService {
         return goals;
     }
 
-    public boolean deleteGoalByUserName(String userName) { //delete
+    public boolean deleteGoalByUserName(String userName) {
         List<Goal> goals = goalRepository.findByUserName(userName);
         if (!goals.isEmpty()) {
             goalRepository.deleteAll(goals);
@@ -47,4 +53,3 @@ public class GoalService {
         return false;
     }
 }
-

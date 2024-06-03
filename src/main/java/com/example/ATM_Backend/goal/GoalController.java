@@ -4,6 +4,7 @@ import com.example.ATM_Backend.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,12 @@ public class GoalController {
         this.goalService = goalService;
     }
 
-
     @PostMapping("/post")
-    public ResponseEntity<String> saveOrUpdateGoal(@RequestBody Goal goal) {
+    public ResponseEntity<String> saveOrUpdateGoal(@Valid @RequestBody Goal goal) {
+        String userName = goal.getUserName();
+        if (userName == null || userName.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("userName cannot be null or empty");
+        }
         try {
             goalService.saveOrUpdateGoal(goal);
             return ResponseEntity.ok("Goal saved or updated successfully");
@@ -104,6 +108,4 @@ public class GoalController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete Goal");
         }
     }
-
 }
-
