@@ -2,12 +2,12 @@ package com.example.ATM_Backend.Badge.service;
 
 import com.example.ATM_Backend.Badge.dto.BadgeDTO;
 import com.example.ATM_Backend.Badge.dto.UserBadgeDTO;
+import com.example.ATM_Backend.appUser.model.AppUser;
 import com.example.ATM_Backend.Badge.model.Badge;
 import com.example.ATM_Backend.Badge.model.UserBadge;
+import com.example.ATM_Backend.appUser.repository.AppUserRepository;
 import com.example.ATM_Backend.Badge.repository.BadgeRepository;
 import com.example.ATM_Backend.Badge.repository.UserBadgeRepository;
-import com.example.ATM_Backend.appUser.model.AppUser;
-import com.example.ATM_Backend.appUser.repository.AppUserRepository;
 import com.example.ATM_Backend.goal.Goal;
 import com.example.ATM_Backend.goal.GoalRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,8 @@ public class BadgeService {
                 userBadge.getBadge().getId(),
                 userBadge.getBadge().getName(),
                 userBadge.getBadge().getDescription(),
-                userBadge.getBadge().getCriteria_attendance(), // 수정된 부분
+                userBadge.getBadge().getCriteria_attendance(),
+                userBadge.getBadge().getCriteria_goalusage(),
                 userBadge.getBadge().getImage_url()
         );
         return new UserBadgeDTO(userBadge.getId(), badgeDTO, userBadge.isAchieved());
@@ -64,7 +65,7 @@ public class BadgeService {
             List<Badge> badges = badgeRepository.findAll();
             for (Badge badge : badges) {
                 Integer continuous = user.getContinuous() != null ? user.getContinuous() : 0;
-                if (continuous >= badge.getCriteria_attendance()) { // 수정된 부분
+                if (continuous >= badge.getCriteria_attendance()) {
                     if (!userBadgeRepository.existsByUserAndBadge(user, badge)) {
                         UserBadge userBadge = new UserBadge();
                         userBadge.setUser(user);
@@ -80,17 +81,18 @@ public class BadgeService {
     public void checkAndAwardBadgesBasedOnGoalUsage() {
         List<AppUser> users = appUserRepository.findAll();
         for (AppUser user : users) {
-            List<Goal> goals = goalRepository.findByUserNameAndOnGoing(user.getUsername(), 1);
-            List<Badge> badges = badgeRepository.findAll();
+            List<Goal> goals = goalRepository.findByUserName(user.getUsername());
             for (Goal goal : goals) {
+                List<Badge> badges = badgeRepository.findAll();
                 for (Badge badge : badges) {
-                    if (badge.getCriteria_goalusage() > 0 && goal.getHowLong() >= badge.getCriteria_goalusage()) { // 수정된 부분
+                    if (badge.getCriteria_goalusage() != null && goal.getHowLong() >= badge.getCriteria_goalusage()) {
                         if (!userBadgeRepository.existsByUserAndBadge(user, badge)) {
                             UserBadge userBadge = new UserBadge();
                             userBadge.setUser(user);
                             userBadge.setBadge(badge);
                             userBadge.setAchieved(true);
                             userBadgeRepository.save(userBadge);
+                            System.out.println("Badge awarded: " + badge.getName() + " to user: " + user.getUsername());
                         }
                     }
                 }

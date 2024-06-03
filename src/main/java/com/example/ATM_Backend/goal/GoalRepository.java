@@ -9,5 +9,4 @@ import java.util.List;
 public interface GoalRepository extends JpaRepository<Goal, Long> {
     List<Goal> findByUserNameAndAppNameAndDate(String userName, String appName, String date);
     List<Goal> findByUserName(String userName);
-    List<Goal> findByUserNameAndOnGoing(String userName, int onGoing); // 추가된 메서드
 }

@@ -30,7 +30,6 @@ public class GoalService {
         existingEntry.setGoalTime(newEntry.getGoalTime());
         existingEntry.setHowLong(newEntry.getHowLong());
         existingEntry.setOnGoing(newEntry.getOnGoing());
-
         goalRepository.save(existingEntry);
     }
 

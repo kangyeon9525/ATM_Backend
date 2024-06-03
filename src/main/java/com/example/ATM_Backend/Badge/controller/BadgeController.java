@@ -2,7 +2,6 @@ package com.example.ATM_Backend.Badge.controller;
 
 import com.example.ATM_Backend.Badge.dto.UserBadgeDTO;
 import com.example.ATM_Backend.Badge.service.BadgeService;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

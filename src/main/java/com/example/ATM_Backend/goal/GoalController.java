@@ -25,7 +25,6 @@ public class GoalController {
         this.goalService = goalService;
     }
 
-
     @PostMapping("/post")
     public ResponseEntity<String> saveOrUpdateGoal(@Valid @RequestBody Goal goal) {
         String userName = goal.getUserName();
@@ -109,6 +108,4 @@ public class GoalController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete Goal");
         }
     }
-
 }
-
