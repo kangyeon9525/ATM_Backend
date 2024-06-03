@@ -22,18 +22,17 @@ public class GoalService {
             Goal existingEntry = existingEntries.get(0);
             updateGoal(existingEntry, goal);
         }
-        // 목표를 저장하거나 업데이트한 후, 뱃지 확인 로직 실행
         badgeService.checkAndAwardBadgesBasedOnGoalUsage();
     }
 
-    private void updateGoal(Goal existingEntry, Goal newEntry) { //시간대별 데이터 업데이트
+    private void updateGoal(Goal existingEntry, Goal newEntry) {
         existingEntry.setGoalTime(newEntry.getGoalTime());
         existingEntry.setHowLong(newEntry.getHowLong());
         existingEntry.setOnGoing(newEntry.getOnGoing());
         goalRepository.save(existingEntry);
     }
 
-    public List<Goal> getGoalByUserName(String userName) { //get
+    public List<Goal> getGoalByUserName(String userName) {
         List<Goal> goals = goalRepository.findByUserName(userName);
         if (goals == null || goals.isEmpty()) {
             throw new IllegalArgumentException("No Goal entries found for userName: " + userName);
@@ -41,7 +40,7 @@ public class GoalService {
         return goals;
     }
 
-    public boolean deleteGoalByUserName(String userName) { //delete
+    public boolean deleteGoalByUserName(String userName) {
         List<Goal> goals = goalRepository.findByUserName(userName);
         if (!goals.isEmpty()) {
             goalRepository.deleteAll(goals);
