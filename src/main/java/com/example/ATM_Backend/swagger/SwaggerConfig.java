@@ -19,7 +19,7 @@ public class SwaggerConfig {
     private Info apiInfo() {
         return new Info()
                 .title("ATM Backend Swagger")
-                .description("ATM 회원가입/로그인 관한 REST API")
+                .description("Dopamine Killer 백엔드 API 명세서")
                 .version("1.0.0");
     }
 }
