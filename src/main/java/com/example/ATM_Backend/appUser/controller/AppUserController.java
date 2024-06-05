@@ -165,13 +165,4 @@ public class AppUserController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "해당 사용자가 보이지 않습니다.")));
     }
 
-    @Operation(summary = "로그아웃")
-    @ApiResponse(responseCode = "200", description = "성공적으로 로그아웃 완료")
-    @GetMapping("/logout")
-    public ResponseEntity<String> logout() {
-        // 클라이언트 측에서 토큰을 삭제해야 합니다.
-        return ResponseEntity.ok("로그아웃되었습니다. 클라이언트에서 사용 중인 토큰을 삭제해주세요.");
-    }
-
-
 }
