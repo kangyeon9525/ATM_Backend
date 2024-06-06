@@ -94,6 +94,7 @@ public class AppUserController {
                 .role(Role.ROLE_MEMBER)  // 최초 가입시 USER로 설정
                 .continuous(0)
                 .loginDate(LocalDate.now())
+                .initialSet(false)
                 .build();
         appUserRepository.save(newUser);
         return ResponseEntity.ok(Map.of("id", newUser.getId(), "message", "회원가입을 성공했습니다"));
@@ -134,11 +135,25 @@ public class AppUserController {
             appUser.resetContinuous();
         }
         appUser.updateLoginDate(currentDate);
+
+        // 최초 세팅여부 판단
+        boolean isInitialSet = appUser.getInitialSet();
+        if (!isInitialSet) {
+            appUser.setInitialSet(true);
+            appUserRepository.save(appUser); // Save only if initialSet was updated
+            String token = jwtTokenProvider.createToken(appUser.getUsername(), appUser.getRole());
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("initialSet", false); // Return false for the first login
+            return ResponseEntity.ok(response);
+        }
+
         appUserRepository.save(appUser);
 
         String token = jwtTokenProvider.createToken(appUser.getUsername(), appUser.getRole());
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
+        response.put("initialSet", true); // Return true for subsequent logins
         return ResponseEntity.ok(response);
     }
 

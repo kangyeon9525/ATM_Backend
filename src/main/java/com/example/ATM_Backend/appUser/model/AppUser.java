@@ -43,6 +43,9 @@ public class AppUser {
     @Column(nullable = false)
     private LocalDate loginDate = LocalDate.now(); // 날짜만 저장
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean initialSet = false;
+
     public void updateLoginDate(LocalDate newDate) {
         this.loginDate = newDate;
     }
