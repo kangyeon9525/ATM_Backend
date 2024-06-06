@@ -26,7 +26,7 @@ public class JwtTokenProvider {
     private String secretKey = "test";
 
     // 토큰 유효시간 30분
-    private long tokenValidTime = 30 * 24 * 60 * 60 * 1000L;
+    private long tokenValidTime = 30 * 60 * 1000L;
 
     private final UserDetailsService userDetailsService;
 
@@ -45,7 +45,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
+                //.setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
                 .signWith(SignatureAlgorithm.HS256, secretKey) // 사용할 암호화 알고리즘과 signature에 들어갈 secret 값 세팅
                 .compact();
     }
