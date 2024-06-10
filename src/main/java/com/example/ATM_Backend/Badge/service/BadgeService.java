@@ -24,12 +24,7 @@ public class BadgeService {
     private final UserBadgeRepository userBadgeRepository;
     private final GoalRepository goalRepository;
 
-    /**
-     * 특정 사용자에게 지정된 배지를 수여하는 메서드
-     *
-     * @param username 사용자 이름
-     * @param badgeId  배지 ID
-     */
+    // 개별 배지를 수여하는 메서드
     public void checkAndAwardBadge(String username, Long badgeId) {
         AppUser user = appUserRepository.findByUsername(username).orElse(null);
         Badge badge = badgeRepository.findById(badgeId).orElse(null);
@@ -38,17 +33,12 @@ public class BadgeService {
             userBadge.setUser(user);
             userBadge.setBadge(badge);
             userBadge.setAchieved(true);
-            userBadge.setUserName(user.getUsername()); // user_name 필드 설정
+            userBadge.setUserName(user.getUsername());
             userBadgeRepository.save(userBadge);
         }
     }
 
-    /**
-     * 특정 사용자의 모든 배지를 조회하는 메서드
-     *
-     * @param username 사용자 이름
-     * @return 사용자 배지 목록
-     */
+    // 특정 유저의 모든 배지를 가져오는 메서드
     public List<UserBadgeDTO> getUserBadges(String username) {
         AppUser user = appUserRepository.findByUsername(username).orElse(null);
         if (user == null) {
@@ -60,42 +50,34 @@ public class BadgeService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * UserBadge를 UserBadgeDTO로 변환하는 메서드
-     *
-     * @param userBadge UserBadge 객체
-     * @return UserBadgeDTO 객체
-     */
+    // UserBadge를 UserBadgeDTO로 변환하는 메서드
     private UserBadgeDTO convertToDTO(UserBadge userBadge) {
+        Badge badge = userBadge.getBadge();
         BadgeDTO badgeDTO = new BadgeDTO(
-                userBadge.getBadge().getId(),
-                userBadge.getBadge().getName(),
-                userBadge.getBadge().getDescription(),
-                userBadge.getBadge().getCriteria_attendance(),
-                userBadge.getBadge().getCriteria_goalusage(),
-                userBadge.getBadge().getImage_url()
+                badge.getId(),
+                badge.getName(),
+                badge.getDescription(),
+                badge.getCriteria_attendance() != null ? badge.getCriteria_attendance() : 0,
+                badge.getCriteria_goalusage(),
+                badge.getImage_url()
         );
         return new UserBadgeDTO(userBadge.getId(), badgeDTO, userBadge.isAchieved());
     }
 
-    /**
-     * 출석 기준으로 모든 사용자에게 배지를 수여하는 메서드
-     */
+    // 출석 기준으로 배지를 자동 수여하는 메서드
     public void checkAndAwardBadgesBasedOnAttendance() {
         List<AppUser> users = appUserRepository.findAll();
-        List<Badge> badges = badgeRepository.findAll();
-
         for (AppUser user : users) {
-            Integer userContinuous = user.getContinuous() != null ? user.getContinuous() : 0;
+            List<Badge> badges = badgeRepository.findAll();
             for (Badge badge : badges) {
                 Integer criteriaAttendance = badge.getCriteria_attendance();
-                if (criteriaAttendance != null && userContinuous >= criteriaAttendance) {
+                if (criteriaAttendance != null && user.getContinuous() != null && user.getContinuous() >= criteriaAttendance) {
                     if (!userBadgeRepository.existsByUserAndBadge(user, badge)) {
                         UserBadge userBadge = new UserBadge();
                         userBadge.setUser(user);
                         userBadge.setBadge(badge);
                         userBadge.setAchieved(true);
-                        userBadge.setUserName(user.getUsername()); // user_name 필드 설정
+                        userBadge.setUserName(user.getUsername());
                         userBadgeRepository.save(userBadge);
                     }
                 }
@@ -103,29 +85,21 @@ public class BadgeService {
         }
     }
 
-    /**
-     * 목표 사용량 기준으로 모든 사용자에게 배지를 수여하는 메서드
-     */
+    // 목표 사용 기준으로 배지를 자동 수여하는 메서드
     public void checkAndAwardBadgesBasedOnGoalUsage() {
         List<AppUser> users = appUserRepository.findAll();
-        List<Badge> badges = badgeRepository.findAll();
-
         for (AppUser user : users) {
             List<Goal> goals = goalRepository.findByUserName(user.getUsername());
-
             for (Goal goal : goals) {
-                Integer goalHowLong = goal.getHowLong();
-                if (goalHowLong == null) continue;
-
+                List<Badge> badges = badgeRepository.findAll();
                 for (Badge badge : badges) {
-                    Integer criteriaGoalUsage = badge.getCriteria_goalusage();
-                    if (criteriaGoalUsage != null && goalHowLong >= criteriaGoalUsage) {
+                    if (badge.getCriteria_goalusage() != null && goal.getHowLong() >= badge.getCriteria_goalusage()) {
                         if (!userBadgeRepository.existsByUserAndBadge(user, badge)) {
                             UserBadge userBadge = new UserBadge();
                             userBadge.setUser(user);
                             userBadge.setBadge(badge);
                             userBadge.setAchieved(true);
-                            userBadge.setUserName(user.getUsername()); // user_name 필드 설정
+                            userBadge.setUserName(user.getUsername());
                             userBadgeRepository.save(userBadge);
                             System.out.println("Badge awarded: " + badge.getName() + " to user: " + user.getUsername());
                         }

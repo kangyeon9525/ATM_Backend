@@ -13,4 +13,3 @@ public interface UserBadgeRepository extends JpaRepository<UserBadge, Long> {
 
     void deleteByUser(AppUser user);
 }
-
