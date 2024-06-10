@@ -24,6 +24,12 @@ public class BadgeService {
     private final UserBadgeRepository userBadgeRepository;
     private final GoalRepository goalRepository;
 
+    /**
+     * 특정 사용자에게 지정된 배지를 수여하는 메서드
+     *
+     * @param username 사용자 이름
+     * @param badgeId  배지 ID
+     */
     public void checkAndAwardBadge(String username, Long badgeId) {
         AppUser user = appUserRepository.findByUsername(username).orElse(null);
         Badge badge = badgeRepository.findById(badgeId).orElse(null);
@@ -37,6 +43,12 @@ public class BadgeService {
         }
     }
 
+    /**
+     * 특정 사용자의 모든 배지를 조회하는 메서드
+     *
+     * @param username 사용자 이름
+     * @return 사용자 배지 목록
+     */
     public List<UserBadgeDTO> getUserBadges(String username) {
         AppUser user = appUserRepository.findByUsername(username).orElse(null);
         if (user == null) {
@@ -48,6 +60,12 @@ public class BadgeService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * UserBadge를 UserBadgeDTO로 변환하는 메서드
+     *
+     * @param userBadge UserBadge 객체
+     * @return UserBadgeDTO 객체
+     */
     private UserBadgeDTO convertToDTO(UserBadge userBadge) {
         BadgeDTO badgeDTO = new BadgeDTO(
                 userBadge.getBadge().getId(),
@@ -60,13 +78,18 @@ public class BadgeService {
         return new UserBadgeDTO(userBadge.getId(), badgeDTO, userBadge.isAchieved());
     }
 
+    /**
+     * 출석 기준으로 모든 사용자에게 배지를 수여하는 메서드
+     */
     public void checkAndAwardBadgesBasedOnAttendance() {
         List<AppUser> users = appUserRepository.findAll();
+        List<Badge> badges = badgeRepository.findAll();
+
         for (AppUser user : users) {
-            List<Badge> badges = badgeRepository.findAll();
+            Integer userContinuous = user.getContinuous() != null ? user.getContinuous() : 0;
             for (Badge badge : badges) {
                 Integer criteriaAttendance = badge.getCriteria_attendance();
-                if (criteriaAttendance != null && user.getContinuous() != null && user.getContinuous() >= criteriaAttendance) {
+                if (criteriaAttendance != null && userContinuous >= criteriaAttendance) {
                     if (!userBadgeRepository.existsByUserAndBadge(user, badge)) {
                         UserBadge userBadge = new UserBadge();
                         userBadge.setUser(user);
@@ -80,14 +103,23 @@ public class BadgeService {
         }
     }
 
+    /**
+     * 목표 사용량 기준으로 모든 사용자에게 배지를 수여하는 메서드
+     */
     public void checkAndAwardBadgesBasedOnGoalUsage() {
         List<AppUser> users = appUserRepository.findAll();
+        List<Badge> badges = badgeRepository.findAll();
+
         for (AppUser user : users) {
             List<Goal> goals = goalRepository.findByUserName(user.getUsername());
+
             for (Goal goal : goals) {
-                List<Badge> badges = badgeRepository.findAll();
+                Integer goalHowLong = goal.getHowLong();
+                if (goalHowLong == null) continue;
+
                 for (Badge badge : badges) {
-                    if (badge.getCriteria_goalusage() != null && goal.getHowLong() >= badge.getCriteria_goalusage()) {
+                    Integer criteriaGoalUsage = badge.getCriteria_goalusage();
+                    if (criteriaGoalUsage != null && goalHowLong >= criteriaGoalUsage) {
                         if (!userBadgeRepository.existsByUserAndBadge(user, badge)) {
                             UserBadge userBadge = new UserBadge();
                             userBadge.setUser(user);
